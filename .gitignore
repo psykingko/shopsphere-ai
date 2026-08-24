@@ -1,0 +1,30 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+env/
+.venv/
+.env/
+
+# Environment
+.env
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
