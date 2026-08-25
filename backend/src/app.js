@@ -4,10 +4,13 @@ const errorHandler = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 const { pool } = require('./config/database');
 
+const cookieParser = require('cookie-parser');
+
 const app = express();
 
 // Built-in middleware for parsing JSON
 app.use(express.json());
+app.use(cookieParser());
 
 // 1. Correlation ID Middleware
 app.use(correlationIdMiddleware);
@@ -29,6 +32,12 @@ app.use((req, res, next) => {
 });
 
 // 3. Routes
+const authRoutes = require('./routes/authRoutes');
+const customerRoutes = require('./routes/customerRoutes');
+
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/customers', customerRoutes);
+
 app.get('/health', async (req, res, next) => {
   try {
     // Check DB connectivity
