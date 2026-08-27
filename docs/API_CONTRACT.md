@@ -58,6 +58,8 @@ The React frontend communicates exclusively with the Node.js backend. This repre
 
 ### Authentication
 - `POST /api/v1/auth/login`: Authenticate and issue secure session.
+- `GET /api/v1/auth/session`: Validate the secure session and return the authenticated principal context. Requires authentication.
+- `POST /api/v1/auth/logout`: Terminate the current browser authentication session by expiring the HTTP-only cookie.
 
 ### Customer Management
 - `GET /api/v1/customers/:id`: Fetch customer profile.

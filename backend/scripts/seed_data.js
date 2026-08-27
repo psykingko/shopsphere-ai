@@ -91,16 +91,34 @@ async function seedData() {
             ids.roles.push({ id, name: roleName });
         }
 
-        // Create 10 deterministic test users
-        for (let i = 0; i < 10; i++) {
+        // Create 4 explicit demo users for Quick Login
+        const demoUsers = [
+            { email: 'demo.admin@shopsphere.local', roleName: 'ADMIN' },
+            { email: 'demo.manager@shopsphere.local', roleName: 'SUPPORT_MANAGER' },
+            { email: 'demo.agent@shopsphere.local', roleName: 'SUPPORT_AGENT' },
+            { email: 'demo.operations@shopsphere.local', roleName: 'OPERATIONS' }
+        ];
+
+        const validHash = '$2b$10$lOUx/RZLMKScJ37i1Be7yekwsg50f4mUPdwZ49fM2F8RCyYODAcAy'; // password123
+
+        for (const demoUser of demoUsers) {
+            const id = seeder.uuid();
+            const role = ids.roles.find(r => r.name === demoUser.roleName);
+            await client.query(
+                'INSERT INTO users (id, email, password_hash, role_id, active) VALUES ($1, $2, $3, $4, $5)',
+                [id, demoUser.email, validHash, role.id, true]
+            );
+            ids.users.push(id);
+        }
+
+        // Create 6 additional deterministic test users
+        for (let i = 0; i < 6; i++) {
             const id = seeder.uuid();
             const role = seeder.choice(ids.roles);
-            // using a deterministic placeholder hash, NO real authentication
-            const testHash = '$2b$10$synthetic_test_hash_placeholder_do_not_use';
             const email = `user${i}@shop.internal`;
             await client.query(
                 'INSERT INTO users (id, email, password_hash, role_id, active) VALUES ($1, $2, $3, $4, $5)',
-                [id, email, testHash, role.id, true]
+                [id, email, validHash, role.id, true]
             );
             ids.users.push(id);
         }

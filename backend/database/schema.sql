@@ -230,3 +230,14 @@ CREATE TABLE ai_messages (
     role VARCHAR NOT NULL,
     content TEXT NOT NULL
 );
+
+CREATE TABLE idempotency_keys (
+    id UUID PRIMARY KEY,
+    idempotency_key VARCHAR NOT NULL,
+    operation VARCHAR NOT NULL,
+    request_fingerprint VARCHAR NOT NULL,
+    response_status INTEGER NOT NULL,
+    response_body JSONB NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    UNIQUE(idempotency_key, operation)
+);

@@ -34,9 +34,21 @@ app.use((req, res, next) => {
 // 3. Routes
 const authRoutes = require('./routes/authRoutes');
 const customerRoutes = require('./routes/customerRoutes');
+const productRoutes = require('./routes/productRoutes');
+const productCategoryRoutes = require('./routes/productCategoryRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const shipmentRoutes = require('./routes/shipmentRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/customers', customerRoutes);
+app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/product-categories', productCategoryRoutes);
+app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/shipments', shipmentRoutes);
+app.use('/api/v1/tickets', ticketRoutes);
+app.use('/api/v1/tasks', taskRoutes);
 
 app.get('/health', async (req, res, next) => {
   try {

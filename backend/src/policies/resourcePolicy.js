@@ -63,8 +63,54 @@ async function canAccessCustomer(principal, customerId) {
     return false;
 }
 
+/**
+ * Checks if the given principal has authorization to access the specific shipment.
+ * CUSTOMER principals can only access shipments for their own orders.
+ * Internal staff bypass customer ownership rules but remain subject to their RBAC.
+ */
+async function canAccessShipment(principal, shipmentId) {
+    if (principal.principal_type === 'CUSTOMER') {
+        const query = `
+            SELECT 1 FROM shipments s
+            JOIN orders o ON s.order_id = o.id
+            WHERE s.id = $1 AND o.customer_id = $2
+        `;
+        const res = await pool.query(query, [shipmentId, principal.principal_id]);
+        return res.rowCount > 0;
+    }
+    
+    // Internal staff (USER) are assumed authorized if their RBAC allowed them to reach this point.
+    if (principal.principal_type === 'USER') {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Checks if the given principal has authorization to access the specific support ticket.
+ * CUSTOMER principals can only access their own tickets.
+ * Internal staff bypass customer ownership rules but remain subject to their RBAC.
+ */
+async function canAccessTicket(principal, ticketId) {
+    if (principal.principal_type === 'CUSTOMER') {
+        const query = 'SELECT 1 FROM support_tickets WHERE id = $1 AND customer_id = $2';
+        const res = await pool.query(query, [ticketId, principal.principal_id]);
+        return res.rowCount > 0;
+    }
+    
+    // Internal staff (USER) are assumed authorized if their RBAC allowed them to reach this point.
+    if (principal.principal_type === 'USER') {
+        return true;
+    }
+
+    return false;
+}
+
 module.exports = {
     canAccessOrder,
     canAccessTask,
-    canAccessCustomer
+    canAccessCustomer,
+    canAccessShipment,
+    canAccessTicket
 };

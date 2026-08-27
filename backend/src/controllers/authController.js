@@ -82,6 +82,41 @@ async function login(req, res, next) {
     }
 }
 
+async function session(req, res, next) {
+    try {
+        // req.principal is populated by requireAuthentication middleware
+        res.json({
+            authenticated: true,
+            principal: req.principal,
+            correlation_id: req.correlationId
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function logout(req, res, next) {
+    try {
+        const isProd = process.env.NODE_ENV === 'production';
+        res.cookie('token', '', {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: 'strict',
+            expires: new Date(0), // Expire immediately
+            path: '/'
+        });
+
+        res.json({
+            message: 'Logout successful',
+            correlation_id: req.correlationId
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
-    login
+    login,
+    session,
+    logout
 };

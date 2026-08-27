@@ -92,9 +92,9 @@ async function runTests() {
         const assignmentId = 'd0000000-0000-4000-8000-000000000001';
         await pool.query(`INSERT INTO task_assignments (id, task_id, user_id, assigned_at, active_flag) VALUES ($1, $2, $3, NOW(), true) ON CONFLICT DO NOTHING`, [assignmentId, taskId1, agentId1]);
 
-        await pool.query(`INSERT INTO approval_requests (id, requested_action, requesting_actor_type, target_entity_type, target_entity_id, status, expiration_timestamp, created_at) VALUES ($1, 'REFUND', 'USER', 'ORDER', $2, 'PENDING', NOW() - INTERVAL '1 day', NOW()) ON CONFLICT DO NOTHING`, [approvalId_expired, orderId1]);
+        await pool.query(`INSERT INTO approval_requests (id, requested_action, requesting_actor_type, target_entity_type, target_entity_id, status, expiration_timestamp, created_at) VALUES ($1, 'REFUND', 'USER', 'ORDER', $2, 'PENDING', NOW() - INTERVAL '1 day', NOW()) ON CONFLICT (id) DO UPDATE SET expiration_timestamp = NOW() - INTERVAL '1 day'`, [approvalId_expired, orderId1]);
         
-        await pool.query(`INSERT INTO approval_requests (id, requested_action, requesting_actor_type, target_entity_type, target_entity_id, status, expiration_timestamp, created_at) VALUES ($1, 'REFUND', 'USER', 'ORDER', $2, 'PENDING', NOW() + INTERVAL '1 day', NOW()) ON CONFLICT DO NOTHING`, [approvalId_pending, orderId1]);
+        await pool.query(`INSERT INTO approval_requests (id, requested_action, requesting_actor_type, target_entity_type, target_entity_id, status, expiration_timestamp, created_at) VALUES ($1, 'REFUND', 'USER', 'ORDER', $2, 'PENDING', NOW() + INTERVAL '1 day', NOW()) ON CONFLICT (id) DO UPDATE SET expiration_timestamp = NOW() + INTERVAL '1 day'`, [approvalId_pending, orderId1]);
 
         // 5. Customer owns their order
         const pCust1 = { principal_type: 'CUSTOMER', principal_id: customerId1 };
